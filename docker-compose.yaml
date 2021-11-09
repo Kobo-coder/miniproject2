@@ -4,30 +4,30 @@ services:
     build: .
     networks:
       - ring-net
-    command: localhost:50001 --start
+    command: node2:50000 --start
   node2:
     image: miniproject2
     build: .
     networks:
       - ring-net
-    command: localhost:50002
+    command: node3:50000
   node3:
     image: miniproject2
     build: .
     networks:
       - ring-net
-    command: localhost:50003
+    command: node4:50000
   node4:
     image: miniproject2
     build: .
     networks:
       - ring-net
-    command: localhost:50004
+    command: node5:50000
   node5:
     image: miniproject2
     build: .
     networks:
       - ring-net
-    command: localhost:50005
+    command: node1:50000
 networks:
   ring-net: {}
