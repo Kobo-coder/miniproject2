@@ -1,0 +1,14 @@
+# Notes
+- Solution: Token Ring
+	- Each node will have a receive method
+	- Each node will either use the token and execute the critical section of the code
+	  or simply pass the token along.
+	- During exectuion of critical section, the node simulates a that the execution
+   	  takes a (little) time by sleeping and indication when it enters and exits the
+	  section.
+
+- Technical notes
+	- The token is represented by a message	
+	- During exectuion of critical section, the node simulates a that the execution
+   	  takes a (little) time by sleeping and indication when it enters and exits the
+	  section.
