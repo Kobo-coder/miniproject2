@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option go_package = "https://github.com/Kobo-coder/miniproject2/api";
+
+// A generic empty message to represent null call messages / call returns
+message Empty {
+}
+
+service TokenService {
+  rpc RecieveToken(Empty) returns (Empty);
+}
