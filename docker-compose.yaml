@@ -1,0 +1,33 @@
+services:
+  node1:
+    image: miniproject2
+    build: .
+    networks:
+      - ring-net
+    command: node2:50000 --start
+  node2:
+    image: miniproject2
+    build: .
+    networks:
+      - ring-net
+    command: node3:50000
+  node3:
+    image: miniproject2
+    build: .
+    networks:
+      - ring-net
+    command: node4:50000
+  node4:
+    image: miniproject2
+    build: .
+    networks:
+      - ring-net
+    command: node5:50000
+  node5:
+    image: miniproject2
+    build: .
+    networks:
+      - ring-net
+    command: node1:50000
+networks:
+  ring-net: {}
