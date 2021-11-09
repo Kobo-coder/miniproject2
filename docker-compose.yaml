@@ -1,0 +1,33 @@
+services:
+  node1:
+    image: miniproject2
+    build: .
+    networks:
+      - ring-net
+    command: localhost:50001 --start
+  node2:
+    image: miniproject2
+    build: .
+    networks:
+      - ring-net
+    command: localhost:50002
+  node3:
+    image: miniproject2
+    build: .
+    networks:
+      - ring-net
+    command: localhost:50003
+  node4:
+    image: miniproject2
+    build: .
+    networks:
+      - ring-net
+    command: localhost:50004
+  node5:
+    image: miniproject2
+    build: .
+    networks:
+      - ring-net
+    command: localhost:50005
+networks:
+  ring-net: {}
