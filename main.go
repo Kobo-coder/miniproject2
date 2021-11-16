@@ -19,12 +19,11 @@ const dockerComposePort = ":50000"
 var wantsAccess = false
 var port = flag.String("port", dockerComposePort, "The port to run the server on")
 var client api.TokenServiceClient = nil
+var nextNode = os.Args[1]
 
 func main() {
-	var nextInLine = os.Args[1]
-
 	if len(os.Args) > 2 && os.Args[2] == "--start" {
-		go giveToken(nextInLine)
+		go giveToken(nextNode)
 	}
 
 	go worker()
@@ -67,20 +66,21 @@ func giveToken(nextNode string) {
 		client = *newClient(nextNode)
 	}
 
+	time.Sleep(time.Second)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-
+	log.Printf("Making request to next in line")
 	_, err := client.ReceiveToken(ctx, &api.Empty{})
 
-	log.Printf("I passed the spliff")
-
 	if err != nil {
-		log.Fatalf("Dank shit my guy")
+		log.Fatalf("Dank shit my guy: %v", err)
 	}
+
+	log.Printf("I passed the spliff")
 }
 
 func newClient(nextNode string) *api.TokenServiceClient {
-	conn, err := grpc.Dial(nextNode, grpc.WithInsecure())
+	conn, err := grpc.Dial(nextNode, grpc.WithInsecure(), grpc.WithBlock())
 
 	if err != nil {
 		log.Fatalf("Failed to connect to next node")
@@ -105,10 +105,14 @@ func worker() {
 }
 
 func (s *TokenServiceServer) ReceiveToken(context.Context, *api.Empty) (*api.Empty, error) {
+	log.Printf("Received token")
 	if wantsAccess {
 		enter()
 		resourceAccess()
 		exit()
 	}
+
+	go giveToken(nextNode)
+
 	return &api.Empty{}, nil
 }
