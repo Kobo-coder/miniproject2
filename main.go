@@ -19,8 +19,10 @@ const dockerComposePort = ":50000"
 var wantsAccess = false
 var nextInLine = os.Args[1]
 var port = flag.String("port", dockerComposePort, "The port to run the server on")
+var client api.TokenServiceClient = nil
 
 func main() {
+
 	if len(os.Args) > 2 && os.Args[2] == "--start" {
 		giveToken(nextInLine)
 	}
@@ -58,8 +60,31 @@ func exit() {
 	wantsAccess = false
 }
 
-func giveToken() {
+func giveToken(nextNode string) {
+	if client == nil {
+		client = *newClient()
+	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	_, err := client.RecieveToken(ctx, &api.Empty{})
+
+	if err != nil {
+		log.Fatalf("Dank shit my guy")
+	}
+}
+
+func newClient() *api.TokenServiceClient {
+	conn, err := grpc.Dial(nextInLine, grpc.WithInsecure())
+
+	if err != nil {
+		log.Fatalf("Failed to connect to next node")
+	}
+
+	client := api.NewTokenServiceClient(conn)
+
+	return &client
 }
 
 type TokenServiceServer struct {
