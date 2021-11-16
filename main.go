@@ -54,11 +54,11 @@ func enter() {
 func resourceAccess() {
 	log.Println("Doing God's work on critical section . . .")
 	time.Sleep(1 * time.Second)
+	wantsAccess = false
 }
 
 func exit() {
 	log.Println("Node exited critical section")
-	wantsAccess = false
 }
 
 func giveToken() {
@@ -95,9 +95,10 @@ type TokenServiceServer struct {
 
 func worker() {
 	//This is the goroutine that sleeps.
-	rand.Seed(int64(os.Getgid()))
+	rand.Seed(time.Now().UnixNano())
 	for {
 		sleep := rand.Intn(20)
+		log.Print(sleep)
 		time.Sleep(time.Duration(sleep+10) * time.Second)
 		log.Println("I want access NOW!!!")
 		wantsAccess = true
