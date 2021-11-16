@@ -2,23 +2,46 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"math/rand"
+	"net"
 	"os"
 	"time"
 
 	"github.com/Kobo-coder/miniproject2/api"
+	"google.golang.org/grpc"
 )
+
+const dockerComposePort = ":50000"
 
 var wantsAccess = false
 var nextInLine = os.Args[1]
+var port = flag.String("port", dockerComposePort, "The port to run the server on")
 
 func main() {
 	if len(os.Args) > 2 && os.Args[2] == "--start" {
 		giveToken(nextInLine)
 	}
 	go worker()
+	startServer()
+}
+
+func startServer() {
+	lis, err := net.Listen("tcp", *port)
+	if err != nil {
+		log.Fatalf("Failed ot listen: %v", err)
+	}
+
+	grpcServer := grpc.NewServer()
+	server := TokenServiceServer{}
+
+	api.RegisterTokenServiceServer(grpcServer, &server)
+	log.Printf("Token Service Server listening to %s\n", lis.Addr())
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
+	}
 }
 
 func enter() {
