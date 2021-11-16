@@ -98,7 +98,6 @@ func worker() {
 	rand.Seed(time.Now().UnixNano())
 	for {
 		sleep := rand.Intn(20)
-		log.Print(sleep)
 		time.Sleep(time.Duration(sleep+10) * time.Second)
 		log.Println("I want access NOW!!!")
 		wantsAccess = true
