@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"math/rand"
 	"net"
@@ -23,7 +22,7 @@ var nextNode = os.Args[1]
 
 func main() {
 	if len(os.Args) > 2 && os.Args[2] == "--start" {
-		go giveToken(nextNode)
+		go giveToken()
 	}
 
 	go worker()
@@ -53,7 +52,8 @@ func enter() {
 }
 
 func resourceAccess() {
-	fmt.Println("Doing God's work on critical section")
+	log.Println("Doing God's work on critical section . . .")
+	time.Sleep(1 * time.Second)
 }
 
 func exit() {
@@ -61,12 +61,12 @@ func exit() {
 	wantsAccess = false
 }
 
-func giveToken(nextNode string) {
+func giveToken() {
 	if client == nil {
 		client = *newClient(nextNode)
 	}
 
-	time.Sleep(time.Second)
+	time.Sleep(50 * time.Millisecond)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	log.Printf("Making request to next in line")
@@ -75,8 +75,6 @@ func giveToken(nextNode string) {
 	if err != nil {
 		log.Fatalf("Dank shit my guy: %v", err)
 	}
-
-	log.Printf("I passed the spliff")
 }
 
 func newClient(nextNode string) *api.TokenServiceClient {
@@ -97,9 +95,11 @@ type TokenServiceServer struct {
 
 func worker() {
 	//This is the goroutine that sleeps.
+	rand.Seed(int64(os.Getgid()))
 	for {
-		sleep := rand.Intn(10)
-		time.Sleep(time.Duration(sleep) * time.Second)
+		sleep := rand.Intn(20)
+		time.Sleep(time.Duration(sleep+10) * time.Second)
+		log.Println("I want access NOW!!!")
 		wantsAccess = true
 	}
 }
@@ -107,12 +107,18 @@ func worker() {
 func (s *TokenServiceServer) ReceiveToken(context.Context, *api.Empty) (*api.Empty, error) {
 	log.Printf("Received token")
 	if wantsAccess {
-		enter()
-		resourceAccess()
-		exit()
+		go enterCriticalSectionAndGiveToken()
+	} else {
+		log.Printf("Not interested in entering critical section, passing token along . . .")
+		go giveToken()
 	}
 
-	go giveToken(nextNode)
-
 	return &api.Empty{}, nil
+}
+
+func enterCriticalSectionAndGiveToken() {
+	enter()
+	resourceAccess()
+	exit()
+	giveToken()
 }
