@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TokenServiceClient interface {
-	RecieveToken(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
+	ReceiveToken(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type tokenServiceClient struct {
@@ -29,9 +29,9 @@ func NewTokenServiceClient(cc grpc.ClientConnInterface) TokenServiceClient {
 	return &tokenServiceClient{cc}
 }
 
-func (c *tokenServiceClient) RecieveToken(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error) {
+func (c *tokenServiceClient) ReceiveToken(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error) {
 	out := new(Empty)
-	err := c.cc.Invoke(ctx, "/TokenService/RecieveToken", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/TokenService/ReceiveToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (c *tokenServiceClient) RecieveToken(ctx context.Context, in *Empty, opts .
 // All implementations must embed UnimplementedTokenServiceServer
 // for forward compatibility
 type TokenServiceServer interface {
-	RecieveToken(context.Context, *Empty) (*Empty, error)
+	ReceiveToken(context.Context, *Empty) (*Empty, error)
 	mustEmbedUnimplementedTokenServiceServer()
 }
 
@@ -50,8 +50,8 @@ type TokenServiceServer interface {
 type UnimplementedTokenServiceServer struct {
 }
 
-func (UnimplementedTokenServiceServer) RecieveToken(context.Context, *Empty) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RecieveToken not implemented")
+func (UnimplementedTokenServiceServer) ReceiveToken(context.Context, *Empty) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReceiveToken not implemented")
 }
 func (UnimplementedTokenServiceServer) mustEmbedUnimplementedTokenServiceServer() {}
 
@@ -66,20 +66,20 @@ func RegisterTokenServiceServer(s grpc.ServiceRegistrar, srv TokenServiceServer)
 	s.RegisterService(&TokenService_ServiceDesc, srv)
 }
 
-func _TokenService_RecieveToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TokenService_ReceiveToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TokenServiceServer).RecieveToken(ctx, in)
+		return srv.(TokenServiceServer).ReceiveToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/TokenService/RecieveToken",
+		FullMethod: "/TokenService/ReceiveToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TokenServiceServer).RecieveToken(ctx, req.(*Empty))
+		return srv.(TokenServiceServer).ReceiveToken(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -92,8 +92,8 @@ var TokenService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*TokenServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "RecieveToken",
-			Handler:    _TokenService_RecieveToken_Handler,
+			MethodName: "ReceiveToken",
+			Handler:    _TokenService_ReceiveToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

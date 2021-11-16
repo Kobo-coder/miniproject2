@@ -7,5 +7,5 @@ message Empty {
 }
 
 service TokenService {
-  rpc RecieveToken(Empty) returns (Empty);
+  rpc ReceiveToken(Empty) returns (Empty);
 }
